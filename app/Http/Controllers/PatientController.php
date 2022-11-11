@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Classes\ApiCatchErrors;
+use App\Http\Requests\PatientListRequest;
 use App\Http\Requests\PatientShowRequest;
 use App\Http\Resources\PatientResource;
 use App\Repositories\Invoice\InvoiceInterface;
 use App\Repositories\Patient\PatientInterface;
 use App\Repositories\Receipt\ReceiptInterface;
 use Exception;
+use Illuminate\Http\Request;
 
 class PatientController extends Controller
 {
@@ -21,15 +23,22 @@ class PatientController extends Controller
         $this->receiptInterface = $receiptInterface;
     }
 
-    public function show(PatientShowRequest $request)
+    public function index(PatientListRequest $request)
     {
         try {
             $validated = $request->validated();
-            $patient = $this->patientInterface->show($validated['external_id']);
-            $invoices = $this->invoiceInterface->filter($validated);
-            $receipts = $this->receiptInterface->filter($validated);
-
-            return new PatientResource((object) ['patient' => $patient, 'invoices' => $invoices, 'receipts' => $receipts]);
+            $patients = $this->patientInterface->index($validated);
+            return PatientResource::collection($patients);
+        } catch (Exception $e) {
+            ApiCatchErrors::rollback($e);
+        }
+    }
+    
+    public function show($externalId)
+    {
+        try {
+            $patient = $this->patientInterface->show($externalId);
+            return new PatientResource($patient);
         } catch (Exception $e) {
             ApiCatchErrors::rollback($e);
         }

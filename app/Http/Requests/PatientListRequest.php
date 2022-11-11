@@ -6,7 +6,7 @@ use App\Classes\ApiCatchErrors;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PatientShowRequest extends FormRequest
+class PatientListRequest extends FormRequest
 {
     protected function failedValidation(Validator $validator)
     {
@@ -31,7 +31,7 @@ class PatientShowRequest extends FormRequest
     public function rules()
     {
         return [
-            'external_id'=>'required|exists:patients,external_patient_id',
+            'external_id'=>'nullable|exists:patients,external_patient_id',
             'start'=>'nullable|date',
             'end'=>'nullable|date'
         ];

@@ -25,5 +25,6 @@ Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth:api');
 
 Route::group(['middleware' => ['auth:api']], function () {
-    Route::get('patients/show', [PatientController::class, 'show'])->name('patients.show');
+    Route::get('patients', [PatientController::class, 'index'])->name('patients.index');
+    Route::get('patients/{external_id}', [PatientController::class, 'show'])->name('patients.show');
 });
